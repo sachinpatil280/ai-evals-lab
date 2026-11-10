@@ -1,0 +1,10 @@
+#!/bin/sh
+. "$(git rev-parse --show-toplevel)/.githooks/identity.sh"
+
+for role in AUTHOR COMMITTER; do
+  ident=$(git var GIT_${role}_IDENT) || die "cannot resolve $role identity"
+  email=$(echo "$ident" | email_of)
+  name=$(echo "$ident" | name_of)
+  [ "$email" = "$REQUIRED_EMAIL" ] || die "$role email is '$email', expected '$REQUIRED_EMAIL'"
+  [ "$name" = "$REQUIRED_NAME" ] || die "$role name is '$name', expected '$REQUIRED_NAME'"
+done

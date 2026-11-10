@@ -36,6 +36,7 @@ Start: 2026-11-10. Commitment: 8–10 hrs/week.
 ## Run
 
 ```
+git config core.hooksPath .githooks   # identity guard, once per clone
 uv sync
 uv run deepeval test run tests/
 ```

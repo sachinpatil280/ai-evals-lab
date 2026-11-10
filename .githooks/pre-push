@@ -1,0 +1,18 @@
+#!/bin/sh
+. "$(git rev-parse --show-toplevel)/.githooks/identity.sh"
+remote_url="$2"
+
+[ "$remote_url" = "$REQUIRED_REMOTE" ] || die "push target is '$remote_url', expected '$REQUIRED_REMOTE'"
+
+# The credential helper uses gh's active account (GITHUB_TOKEN excluded); it must be personal.
+login=$(env -u GITHUB_TOKEN gh api user --jq .login 2>/dev/null)
+[ "$login" = "$REQUIRED_NAME" ] || die "gh active account is '$login'. Run: env -u GITHUB_TOKEN gh auth switch --user $REQUIRED_NAME"
+
+zero=0000000000000000000000000000000000000000
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [ "$local_sha" = "$zero" ] && continue
+  if [ "$remote_sha" = "$zero" ]; then range="$local_sha"; else range="$remote_sha..$local_sha"; fi
+  bad=$(git log --format='%h %ae %ce' "$range" | awk -v e="$REQUIRED_EMAIL" '$2 != e || $3 != e')
+  [ -z "$bad" ] || die "commits with wrong author/committer email:
+$bad"
+done

@@ -1,0 +1,10 @@
+#!/bin/sh
+# Block co-author trailers carrying any non-allowed human identity (e.g. work email).
+. "$(git rev-parse --show-toplevel)/.githooks/identity.sh"
+
+grep -iE '^co-authored-by:' "$1" | email_of | while read -r email; do
+  case "$email" in
+    "$REQUIRED_EMAIL"|noreply@anthropic.com) ;;
+    *) die "co-author email '$email' is not allowed" ;;
+  esac
+done || exit 1
