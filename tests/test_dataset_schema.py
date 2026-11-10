@@ -9,7 +9,7 @@ import pytest
 from evals.schema import Difficulty, GoldenRecord
 
 DATASETS = Path(__file__).parent.parent / "datasets"
-GOLDEN = DATASETS / "golden.jsonl"
+GOLDEN = DATASETS / "golden"  # one us-NNN.json file per record
 
 # Phase 1 week-1 targets. Raise as the dataset grows toward 50-100.
 MIN_RECORDS = 15
@@ -17,22 +17,25 @@ MIN_DOMAINS = 4
 MIN_HARD = 5  # ambiguous + edge
 
 
+def golden_files() -> list[Path]:
+    return sorted(GOLDEN.glob("*.json"))
+
+
 def load_golden() -> list[GoldenRecord]:
-    lines = [line for line in GOLDEN.read_text().splitlines() if line.strip()]
-    return [GoldenRecord.model_validate_json(line) for line in lines]
+    return [GoldenRecord.model_validate_json(f.read_text()) for f in golden_files()]
 
 
 def test_example_record_matches_schema():
     GoldenRecord.model_validate(json.loads((DATASETS / "example_record.json").read_text()))
 
 
-def test_every_line_is_a_valid_record():
-    for n, line in enumerate(GOLDEN.read_text().splitlines(), start=1):
-        if line.strip():
-            try:
-                GoldenRecord.model_validate_json(line)
-            except ValueError as e:
-                pytest.fail(f"golden.jsonl line {n}: {e}")
+def test_every_file_is_a_valid_record():
+    for f in golden_files():
+        try:
+            record = GoldenRecord.model_validate_json(f.read_text())
+        except ValueError as e:
+            pytest.fail(f"{f.name}: {e}")
+        assert record.id == f.stem, f"{f.name}: id is '{record.id}', must match file name"
 
 
 def test_ids_are_unique():
