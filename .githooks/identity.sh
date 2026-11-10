@@ -2,7 +2,7 @@
 # Every commit and push must belong to the personal account sachinpatil280.
 REQUIRED_NAME="sachinpatil280"
 REQUIRED_EMAIL="37938690+sachinpatil280@users.noreply.github.com"
-REQUIRED_REMOTE="https://sachinpatil280@github.com/sachinpatil280/ai-evals-lab.git"
+REQUIRED_REMOTE="git@github.com-personal:sachinpatil280/ai-evals-lab.git"
 
 die() {
   echo "BLOCKED (identity rule): $1" >&2

@@ -4,9 +4,12 @@ remote_url="$2"
 
 [ "$remote_url" = "$REQUIRED_REMOTE" ] || die "push target is '$remote_url', expected '$REQUIRED_REMOTE'"
 
-# The credential helper uses gh's active account (GITHUB_TOKEN excluded); it must be personal.
-login=$(env -u GITHUB_TOKEN gh api user --jq .login 2>/dev/null)
-[ "$login" = "$REQUIRED_NAME" ] || die "gh active account is '$login'. Run: env -u GITHUB_TOKEN gh auth switch --user $REQUIRED_NAME"
+# The SSH key behind the remote's host alias must authenticate as the personal account.
+greeting=$(ssh -T -o BatchMode=yes -o ConnectTimeout=10 "${REQUIRED_REMOTE%%:*}" 2>&1)
+case "$greeting" in
+  "Hi $REQUIRED_NAME!"*) ;;
+  *) die "SSH key authenticates as: '$greeting'" ;;
+esac
 
 zero=0000000000000000000000000000000000000000
 while read -r local_ref local_sha remote_ref remote_sha; do
