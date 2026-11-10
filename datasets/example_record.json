@@ -1,0 +1,32 @@
+{
+  "id": "us-000",
+  "domain": "auth",
+  "story": "As a registered user, I want to reset my password via email so that I can regain access to my account.",
+  "acceptance_criteria": [
+    "A reset link is sent only if the email belongs to a registered account.",
+    "The reset link expires after 30 minutes.",
+    "The reset link can be used only once."
+  ],
+  "reference_test_cases": [
+    {
+      "title": "Unregistered email gets the same response and no email",
+      "preconditions": "No account exists for nobody@example.com",
+      "steps": ["Request password reset for nobody@example.com"],
+      "expected": "Generic 'if the account exists, an email was sent' message; no email is sent; response does not reveal account existence"
+    },
+    {
+      "title": "Reset link rejected one second after 30-minute expiry",
+      "preconditions": "Registered user a@example.com; reset requested at T0",
+      "steps": ["Open the reset link at T0 + 30m 1s"],
+      "expected": "Link rejected with an 'expired' message; password unchanged"
+    },
+    {
+      "title": "Reset link cannot be reused",
+      "preconditions": "Registered user a@example.com has a valid reset link",
+      "steps": ["Reset password using the link", "Open the same link again"],
+      "expected": "Second use rejected; new password remains in effect"
+    }
+  ],
+  "difficulty": "edge",
+  "notes": "Format example only, not part of the golden set. LLMs usually miss account-enumeration and single-use checks."
+}

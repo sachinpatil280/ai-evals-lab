@@ -6,7 +6,8 @@ requires-python = ">=3.12,<3.14"
 dependencies = []
 
 [dependency-groups]
-dev = ["deepeval>=4.3.3,<5", "pytest>=9.2,<10"]
+dev = ["deepeval>=4.3.3,<5", "pydantic>=2.13,<3", "pytest>=9.2,<10"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["."]
