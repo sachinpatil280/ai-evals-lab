@@ -1,0 +1,12 @@
+[project]
+name = "ai-evals-lab"
+version = "0.1.0"
+description = "LLM evaluation pipelines: golden datasets, LLM-as-judge calibration, CI-gated evals"
+requires-python = ">=3.12,<3.14"
+dependencies = []
+
+[dependency-groups]
+dev = ["deepeval>=4.3.3,<5", "pytest>=9.2,<10"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
